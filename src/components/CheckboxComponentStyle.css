@@ -1,0 +1,79 @@
+:root {
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --ink: #22221e;
+  --muted: #75736a;
+  --border: #e4e2d8;
+  --accent: #3f5b44;
+  --accent-light: #e7ede5;
+  --clay: #b9552e;
+  --clay-light: #f4e4db;
+}
+
+/* Container row for each checkbox + label */
+div:has(> input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* Custom Checkbox Design */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  background-color: var(--surface);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  outline: none;
+  flex-shrink: 0;
+}
+
+/* Hover State */
+input[type="checkbox"]:hover {
+  border-color: var(--accent);
+}
+
+/* Focus Outline for Accessibility */
+input[type="checkbox"]:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+/* Checked State */
+input[type="checkbox"]:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+/* Custom Checkmark Icon using CSS Clip Path */
+input[type="checkbox"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  clip-path: polygon(14% 44%, 0 65%, 42% 95%, 100% 16%, 80% 0%, 38% 62%);
+  background-color: var(--surface);
+}
+
+/* Label Styling */
+input[type="checkbox"] + label {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  user-select: none;
+}
+input[type="checkbox"]:checked + label {
+  color: var(--ink);
+}
+
+/* Optional hover emphasis on label */
+div:hover > label {
+  color: var(--ink);
+}

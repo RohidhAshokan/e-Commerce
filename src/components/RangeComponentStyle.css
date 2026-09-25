@@ -1,0 +1,113 @@
+:root {
+  --bg: #f5f4ef;
+  --surface: #ffffff;
+  --ink: #22221e;
+  --muted: #75736a;
+  --border: #e4e2d8;
+  --accent: #3f5b44;
+  --accent-light: #e7ede5;
+  --clay: #b9552e;
+  --clay-light: #f4e4db;
+}
+
+.container {
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 200px; 
+}
+
+.thumb,
+.thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.thumb {
+  pointer-events: none;
+  position: absolute;
+  height: 0;
+  width: 200px;
+  outline: none;
+  top: 50%; /* Align input baseline to exact vertical center */
+}
+
+.thumb--left {
+  z-index: 3;
+}
+
+.thumb--right {
+  z-index: 4;
+}
+
+/* Thumbs perfectly centered on the line */
+.thumb::-webkit-slider-thumb {
+  background-color: var(--surface);
+  border: 2px solid var(--accent); 
+  border-radius: 50%;
+  cursor: pointer;
+  height: 15px; 
+  width: 15px;  
+  pointer-events: all;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.thumb::-moz-range-thumb {
+  background-color: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  height: 10px;
+  width: 10px;
+  pointer-events: all;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Custom visual track wrapper */
+.slider {
+  position: relative;
+  width: 200px;
+}
+
+/* Track centered vertically using transform */
+.slider__track,
+.slider__range {
+  position: absolute;
+  height: 3px; 
+  border-radius: 999px;
+  top: 50%;
+  transform: translateY(-50%); /* Centers 4px track line on center line */
+}
+
+.slider__track {
+  background-color: var(--border); 
+  width: 100%;
+  z-index: 1;
+}
+
+.slider__range {
+  background-color: var(--accent); 
+  z-index: 2;
+}
+
+/* Text labels */
+.slider__left-value,
+.slider__right-value {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px; 
+  position: absolute;
+}
+
+.slider__left-value {
+  left: 0px;
+}
+
+.slider__right-value {
+  right: 0px;
+}
