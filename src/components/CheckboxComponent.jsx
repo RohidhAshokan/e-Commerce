@@ -2,14 +2,14 @@ import "./CheckboxComponentStyle.css";
 
 export function CheckboxComponent({
   onChange,
-  checkboxOptions,
-  checkboxOptions2,
+  categoryCheckbox,
+  colorCheckbox,
 }) {
   return (
     <>
-      {checkboxOptions && (
+      {categoryCheckbox && (
         <>
-          {checkboxOptions.map((el) => (
+          {categoryCheckbox.map((el) => (
             <div key={el.name}>
               <input
                 id={el.name}
@@ -23,9 +23,9 @@ export function CheckboxComponent({
           ))}
         </>
       )}
-      {checkboxOptions2 && (
+      {colorCheckbox && (
         <>
-          {checkboxOptions2.map((el) => (
+          {colorCheckbox.map((el) => (
             <div key={el.name}>
               <input
                 id={el.name}

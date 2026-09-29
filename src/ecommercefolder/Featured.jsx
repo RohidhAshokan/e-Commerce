@@ -11,38 +11,86 @@ import RangeComponent from "../components/RangeComponent";
 export function Featured() {
   const dispatch = useDispatch();
   let [pageNumber, setPageNumber] = useState(1);
+  const [categoryCheckbox, setCategoryCheckbox] = useState();
+  const [colorCheckbox, setColorCheckbox] = useState();
   const { productList, searchText, isFilter } = useSelector(
     (state) => state.ProductReducer,
   );
+  const shoppingCartIcon = Image.shoppingCartIcon;
   let numberOfProduct = 8;
   let lastIndex = pageNumber * numberOfProduct;
   let firstIndex = lastIndex - numberOfProduct;
   let searchResults = productList.filter((el) =>
     el.name.toLowerCase().includes(searchText.toLowerCase()),
   );
-  let updatedList = searchResults.slice(firstIndex, lastIndex);
-  let productListLength = Math.ceil(searchResults.length / numberOfProduct);
-  const shoppingCartIcon = Image.shoppingCartIcon;
-  const pageRedirect = (index) => setPageNumber(index + 1);
-  const handlePreviousPage = () => setPageNumber(pageNumber - 1);
-  const handleNextPage = () => setPageNumber(pageNumber + 1);
-  let category = [...new Set(productList.map((el) => el.category))];
-  let price = [...new Set(productList.map((el) => el.price))];
-  let checkboxOptions = [];
-  let checkboxOptions2 = [];
-  let colors = [...new Set(productList.map((el) => el.colors.name))];
 
-  category.map((el, index) =>
-    checkboxOptions.push({ id: index + 1, name: el, isActive: false }),
-  );
+  
+  let price = [...new Set(searchResults.map((el) => el.price))];
+
   let newPrice = price.map((el) => el.replaceAll("₹", "").replaceAll(",", ""));
   newPrice.sort((a, b) => a - b);
   let min = 0;
   let maxNumber = newPrice[newPrice.length - 1];
   let max = Math.ceil(maxNumber / 1000) * 1000;
-  colors.map((el, index) =>
-    checkboxOptions2.push({ id: index + 1, name: el, isActive: false }),
-  );
+
+  const [minVal, setMinVal] = useState(min);
+  const [maxVal, setMaxVal] = useState(max);
+  
+  const categories = [...new Set(searchResults.map((el) => el.category))];
+  let colors = [...new Set(searchResults.map((el) => el.colors.name))];
+  useEffect(() => {
+    setCategoryCheckbox((prev) =>
+      categories.map((category, index) => {
+        const existingCategory = prev?.find((item) => item.name === category);
+        
+        return {
+          id: index + 1,
+          name: category,
+          isActive: true,
+        };
+      }),
+    );
+    setColorCheckbox((prev) =>
+      colors.map((items, index) => {
+        prev?.find((item) => item.name === items);
+
+        return {
+          id: index + 1,
+          name: items,
+          isActive: true,
+        };
+      }),
+    );
+  }, [searchText, productList]);
+
+  if (categoryCheckbox) {
+    searchResults = [...searchResults].filter((el) =>
+      categoryCheckbox.find(
+        (category) => category.isActive && el.category === category.name,
+      ),
+    );
+  }
+  if (colorCheckbox) {
+    searchResults = [...searchResults].filter((el) =>
+      colorCheckbox.find(
+        (color) => color.isActive && el.colors.name === color.name,
+      ),
+    );
+  }
+
+  if (max) {
+    searchResults = [...searchResults].filter(
+      (el) =>
+        el.price.replaceAll("₹", "").replaceAll(",", "") >= minVal &&
+        el.price.replaceAll("₹", "").replaceAll(",", "") <= maxVal,
+    );
+  }
+  let updatedList = searchResults.slice(firstIndex, lastIndex);
+  let productListLength = Math.ceil(searchResults.length / numberOfProduct);
+
+  const pageRedirect = (index) => setPageNumber(index + 1);
+  const handlePreviousPage = () => setPageNumber(pageNumber - 1);
+  const handleNextPage = () => setPageNumber(pageNumber + 1);
 
   const handleOnClick = (el) => {
     if (el.isAdded) {
@@ -67,6 +115,21 @@ export function Featured() {
       dispatch(getSearchText(""));
     };
   }, []);
+  function handleCategory(e) {
+    const { name, checked } = e.target;
+    const updatedCategory = categoryCheckbox.map((el) => {
+      if (name === el.name) {
+        return { ...el, isActive: checked };
+      } else return el;
+    });
+    const updatedColor = colorCheckbox.map((el) => {
+      if (name === el.name) {
+        return { ...el, isActive: checked };
+      } else return el;
+    });
+    setCategoryCheckbox(updatedCategory);
+    setColorCheckbox(updatedColor);
+  }
 
   return (
     <div
@@ -92,15 +155,28 @@ export function Featured() {
             <div className="filters">
               <div className="filter-group">
                 <h4>Category</h4>
-                <CheckboxComponent checkboxOptions={checkboxOptions} />
+                <CheckboxComponent
+                  categoryCheckbox={categoryCheckbox}
+                  onChange={(e) => handleCategory(e)}
+                />
               </div>
-              <div className="filter-group" style={{paddingBottom: "20px"}}>
+              <div className="filter-group" style={{ paddingBottom: "20px" }}>
                 <h4>Price</h4>
-                <RangeComponent min={min} max={max} />
+                <RangeComponent
+                  setMinVal={setMinVal}
+                  setMaxVal={setMaxVal}
+                  min={0}
+                  max={max}
+                  minVal={minVal}
+                  maxVal={maxVal}
+                />
               </div>
               <div className="filter-group">
                 <h4>Color</h4>
-                <CheckboxComponent checkboxOptions2={checkboxOptions2} />
+                <CheckboxComponent
+                  colorCheckbox={colorCheckbox}
+                  onChange={(e) => handleCategory(e)}
+                />
               </div>
             </div>
           </div>
@@ -109,7 +185,7 @@ export function Featured() {
         <div>
           {isFilter && (
             <p className="search-header">
-              Showing results for — {productList.length} items
+              Showing results for — {searchResults.length} items
             </p>
           )}
           <div

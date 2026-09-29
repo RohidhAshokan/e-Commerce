@@ -21,8 +21,8 @@ export default function App() {
             <Route path="/featured" element={<Featured />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/cart" element={<Cart />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            {/* <Route path="/login" element={<Login />} /> */}
+            {/* <Route path="/signup" element={<Signup />} /> */}
           </Routes>
         </PersistGate>
       </Provider>
