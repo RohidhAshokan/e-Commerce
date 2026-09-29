@@ -65,9 +65,6 @@ export function Navbar() {
             <NavLink to="/featured" className="links">
               Featured
             </NavLink>
-            <NavLink to="/orders" className="links">
-              Orders
-            </NavLink>
             <NavLink to="/cart" className="links">
               Cart
               {cartData.length > 0 ? (
@@ -76,9 +73,12 @@ export function Navbar() {
                 <></>
               )}
             </NavLink>
-            <NavLink to="/login" className="links">
-              Log in
+            <NavLink to="/orders" className="links">
+              Orders
             </NavLink>
+            {/* <NavLink to="/login" className="links">
+              Log in
+            </NavLink> */}
           </div>
         </div>
       </div>

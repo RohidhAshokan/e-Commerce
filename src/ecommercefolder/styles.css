@@ -86,7 +86,7 @@ body {
 }
 .delete-icon {
   position: absolute;
-  right: 14px;
+  right: 55px;
   top: 55%;
   transform: translateY(-50%);
   cursor: pointer;
