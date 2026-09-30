@@ -1,4 +1,4 @@
-import { GET_FILTER_STATUS, GET_PRODUCT_LIST, GET_SEARCH_TEXT } from "./types";
+import { GET_FILTER_STATUS, GET_PRODUCT_LIST, GET_SEARCH_TEXT, GET_ORDER_LIST } from "./types";
 
 export const getProductList = (params) => {
   return {
@@ -15,6 +15,12 @@ export const getSearchText = (params) => {
 export const getFilterStatus = (params) => {
   return {
     type: GET_FILTER_STATUS,
+    payload: params,
+  };
+};
+export const getOrderList = (params) => {
+  return {
+    type: GET_ORDER_LIST,
     payload: params,
   };
 };

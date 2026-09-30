@@ -3,6 +3,8 @@ import close from "./icons/close.png"
 import shoppingCartIcon from "./icons/Shopping Cart Light.png"
 import filterOn from "./icons/filterOn.png"
 import filterOff from "./icons/filterOff.png"
+import shoppingBagIcon from "./icons/shoppingBag.png"
+import checkMark from "./icons/checkmark.png"
 import activewearCategory from "./Activewear Category.jpg"
 import outwearCategory from "./Outwear Category.jpg"
 import bagCategory from "./Bag Category.jpg"
@@ -74,6 +76,8 @@ export const Image = {
   shoppingCartIcon,
   filterOn,
   filterOff,
+  shoppingBagIcon,
+  checkMark,
   activewearCategory,
   outwearCategory,
   bagCategory,
