@@ -1,3 +1,4 @@
 export const GET_PRODUCT_LIST = "GET_PRODUCT_LIST";
 export const GET_SEARCH_TEXT = "GET_SEARCH_TEXT";
 export const GET_FILTER_STATUS = "GET_FILTER_STATUS";
+export const GET_ORDER_LIST = "GET_ORDER_LIST";
