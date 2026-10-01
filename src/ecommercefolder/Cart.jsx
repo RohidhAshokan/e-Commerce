@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonComponent from "../components/ButtonComponent";
 import "./styles.css";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,11 +8,12 @@ import { Image } from "../images";
 import { useNavigate } from "react-router-dom";
 import { getOrderList } from "../redux/action";
 import moment from "moment";
+import { statusList } from "../constants";
 
 export function Cart() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  let [checkedOut, setCheckedOut] = useState(false);
+  let [recepit, setRecepit] = useState([]);
   let { productList, orderList } = useSelector((state) => state.ProductReducer);
   let cartData = productList.filter((el) => el.isAdded);
   let subTotal = 0;
@@ -28,14 +29,13 @@ export function Cart() {
   let total = subTotal + shippingCharge;
   if (orderList.length > 0) {
     orderList.map((el) => {
-      let price = el.price.replaceAll("₹", "").replaceAll(",", "");
+      let price = el.price?.replaceAll("₹", "").replaceAll(",", "");
       let noOfProduct = +price * el.quantity;
       checkoutSubTotal = noOfProduct + Number(checkoutSubTotal);
     });
     checkoutShippingCharge = orderList.length * 50;
     checkoutTotal = checkoutSubTotal + checkoutShippingCharge;
   }
-
   const handleAddProduct = (el) => {
     let updatedProductList = productList.map((item) => {
       if (item.id === el.id) {
@@ -65,25 +65,31 @@ export function Cart() {
     dispatch(getProductList(updatedProductList));
   };
   function handleCheckout() {
+    const randomHex = Math.random().toString(16).substring(2, 8).toUpperCase();
+    const orderId = `ORD-${randomHex}`;
+    const randomStatus = statusList[Math.floor(Math.random() * statusList.length)];
+    const status = randomStatus;
     let updatedCartList = cartData.map((el) => {
       return {
         ...el,
-        checkout_at: moment(new Date()).format("MMMM Do YYYY, h:mm:ss a"),
+        checkoutAt: moment(new Date()).format("MMMM Do YYYY, h:mm a"),
+        orderId,
+        status,
       };
     });
-    dispatch(getOrderList(updatedCartList));
+    dispatch(getOrderList([...orderList, ...updatedCartList]));
+    setRecepit(cartData);
     let updatedProductList = productList.map((item) => {
       return { ...item, isAdded: false, quantity: 0 };
     });
     dispatch(getProductList(updatedProductList));
-    setCheckedOut(true);
   }
   const handleRedrectFeatures = () => navigate("/featured");
   const handleTrackOrder = () => navigate("/orders");
   const handleContinueShopping = () => navigate("/featured");
   return (
-    <div className="bg-wrap">
-      {checkedOut ? (
+    <>
+      {recepit.length > 0 ? (
         <div
           style={{
             padding: "56px 48px",
@@ -111,14 +117,25 @@ export function Cart() {
               Order #FS-10482. We've sent a confirmation to your email.
             </p>
           </div>
-          {orderList.map((el) => {
+          {recepit?.map((el) => {
             return (
               <div
                 className="cart-item"
                 key={el.id}
-                style={{ padding: "10px 20px" }}
+                style={{
+                  padding: "10px 20px",
+                  gridTemplateColumns: "60px 1fr auto",
+                }}
               >
-                <img src={el.image} style={{ height: "60px", width: "60px" }} />
+                <div
+                  className="cart-item-thumb"
+                  style={{ height: "60px", width: "60px" }}
+                >
+                  <img
+                    src={el.image}
+                    style={{ height: "60px", width: "60px" }}
+                  />
+                </div>
                 <div>
                   <div className="cart-item-name">{el.name}</div>
                   <div
@@ -126,7 +143,7 @@ export function Cart() {
                     style={{ display: "flex", gap: "10px" }}
                   >
                     {el.colors.name}
-                    <div className="cart-item-meta">{el.quantity}qty</div>
+                    <div className="cart-item-meta">{el.quantity} · Qty </div>
                   </div>
                 </div>
                 <div className="cart-item-price">{el.price}</div>
@@ -295,6 +312,6 @@ export function Cart() {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }
