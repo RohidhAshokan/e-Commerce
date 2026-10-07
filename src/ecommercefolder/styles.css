@@ -171,6 +171,9 @@ body {
   grid-template-columns: repeat(4, 1fr);
   justify-self: center;
 }
+.filter-sidebar{
+  max-width: 220px;
+}
 .filter-group h4 {
   font-size: 13px;
   font-weight: 600;
@@ -262,6 +265,9 @@ a {
   color: white;
   font-family: "Newsreader", serif;
   font-size: 20px;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.9),
+    0 1px 3px rgba(0, 0, 0, 5);
 }
 .button-style {
   display: flex;
@@ -294,7 +300,7 @@ a {
   gap: 20px;
   align-items: center;
   padding: 20px 0;
-  border-bottom: 1px solid var(--border);
+  /* border-bottom: 1px solid var(--border); */
 }
 .cart-item-thumb {
   width: 88px;
@@ -480,6 +486,16 @@ a {
   animation: spin 10s;
   animation-duration: 0.5s;
 }
+.loading-spinner-large {
+    width: 66px;
+    height: 66px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 20px;
+}
+
 .orders-page {
   padding: 56px 48px;
   max-width: 920px;
@@ -550,7 +566,7 @@ a {
   align-items: flex-start;
 }
 .modal-head-orderid {
-  font-family: "anthropic-serif", ui-serif, Georgia, "Times New Roman", serif;
+  font-family: "Inter", sans-serif;
   font-size: 20px;
 }
 .modal-checkout {

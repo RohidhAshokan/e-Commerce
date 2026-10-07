@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Modal from "../components/Modal";
 import { statusList } from "../constants";
+import { PriceConversion } from "../common/PriceConversion";
 
 export function Orders() {
   let { productList, orderList } = useSelector((state) => state.ProductReducer);
@@ -74,79 +75,84 @@ export function Orders() {
           <div className="orders-page-sub-head">
             {updatedOrderList.length} orders in the last 6 months
           </div>
-          {updatedOrderList.map((el, index) => (
-            <div className="order-card" key={el.orderId}>
-              <div className="order-head">
-                <span>
-                  <strong className="order-head-strong">{el.orderId}</strong> ·{" "}
-                  {el.checkoutAt}
-                </span>
-                <span className="order-status">{el.status}</span>
-              </div>
-              {el.orders.slice(0, 2).map((item) => (
-                <div
-                  key={item.id}
-                  className="cart-item"
-                  style={{
-                    padding: "10px 20px",
-                    gridTemplateColumns: "60px 1fr auto",
-                  }}
-                >
+          <div style={{ display: "flex", flexDirection: "column-reverse" }}>
+            {updatedOrderList.map((el, index) => (
+              <div className="order-card" key={el.orderId}>
+                <div className="order-head">
+                  <span>
+                    <strong className="order-head-strong">{el.orderId}</strong>{" "}
+                    · {el.checkoutAt}
+                  </span>
+                  <span className="order-status">{el.status}</span>
+                </div>
+                {el.orders.slice(0, 2).map((item, idx) => (
                   <div
-                    className="cart-item-thumb"
-                    style={{ height: "64px", width: "64px" }}
+                    key={item.id}
+                    className="cart-item"
+                    style={{
+                      padding: "10px 20px",
+                      gridTemplateColumns: "60px 1fr auto",
+                      ...(el.orders.length - 1 !== idx && {
+                        borderBottom: "1px solid #e4e2d8",
+                      }),
+                    }}
                   >
-                    <img
-                      src={item.image}
-                      style={{ height: "64px", width: "64px" }}
-                    />
-                  </div>
-                  <div>
-                    <div className="cart-item-name">{item.name}</div>
                     <div
-                      className="cart-item-meta"
-                      style={{ display: "flex", gap: "10px" }}
+                      className="cart-item-thumb"
+                      style={{ height: "64px", width: "64px" }}
                     >
-                      {item.colors.name}
-                      <div className="cart-item-meta">
-                        {" "}
-                        · Qty {item.quantity}
-                      </div>
+                      <img
+                        src={item.image}
+                        style={{ height: "64px", width: "64px" }}
+                      />
+                    </div>
+                    <div>
+                      <div className="cart-item-name">{item.name}</div>
                       <div
-                        className="cart-item-price"
-                        style={{ fontSize: "13px", fontWeight: "400" }}
+                        className="cart-item-meta"
+                        style={{ display: "flex", gap: "10px" }}
                       >
-                        ₹{item.price}
+                        {item.colors.name}
+                        <div className="cart-item-meta">
+                          {" "}
+                          · Qty {item.quantity}
+                        </div>
+                        <div
+                          className="cart-item-price"
+                          style={{ fontSize: "13px", fontWeight: "400" }}
+                        >
+                          ₹{item.price}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              {el.orders.length > 2 && (
-                <div className="order-card-view-modal-wrap">
-                  <div
-                    className="order-card-view-modal"
+                ))}
+                {el.orders.length > 2 && (
+                  <div className="order-card-view-modal-wrap">
+                    <div
+                      className="order-card-view-modal"
+                      onClick={() => handleViewOrder(el)}
+                    >
+                      + {el.orders.length - 2} more items
+                    </div>
+                    <span></span>
+                  </div>
+                )}
+                <div className="order-card-footer">
+                  <div className="order-card-footer-info">
+                    {el.orders.length} items · Total{" "}
+                    <span>{PriceConversion(orderPrice[index])}</span>
+                  </div>
+                  <ButtonComponent
+                    variant={"outline"}
                     onClick={() => handleViewOrder(el)}
                   >
-                    + {el.orders.length - 2} more items
-                  </div>
-                  <span></span>
+                    View order
+                  </ButtonComponent>
                 </div>
-              )}
-              <div className="order-card-footer">
-                <div className="order-card-footer-info">
-                  {el.orders.length} items · Total{" "}
-                  <span>₹{orderPrice[index]}</span>
-                </div>
-                <ButtonComponent
-                  variant={"outline"}
-                  onClick={() => handleViewOrder(el)}
-                >
-                  View order
-                </ButtonComponent>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <div className="order-empty">
@@ -278,14 +284,16 @@ export function Orders() {
 
             <div className="orderlist-map">
               {" "}
-              {orderHistory.orders?.map((el) => (
+              {orderHistory.orders?.map((el, idx) => (
                 <div
                   className="cart-item"
                   key={el.id}
                   style={{
-                    padding: "10px  0  0",
-                    borderBottom: "0",
+                    padding: "10px  0  5px",
                     gridTemplateColumns: "60px 1fr auto",
+                    ...(orderHistory.orders.length - 1 !== idx && {
+                      borderBottom: "1px solid #e4e2d8",
+                    }),
                   }}
                 >
                   <div
@@ -315,15 +323,15 @@ export function Orders() {
             <div className="cart-summary" style={{ marginTop: "8px" }}>
               <div className="summary-row">
                 <span>Subtotal</span>
-                <span>₹{subTotal}.00</span>
+                <span>{PriceConversion(subTotal)}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
-                <span>₹{shippingCharge}.00</span>
+                <span>{PriceConversion(shippingCharge)}</span>
               </div>
               <div className="summary-row total">
                 <span>Total paid</span>
-                <span>₹{total}.00</span>
+                <span>{PriceConversion(total)}</span>
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import filterOff from "./icons/filterOff.png"
 import shoppingBagIcon from "./icons/shoppingBag.png"
 import checkMark from "./icons/checkmark.png"
 import shopingBox from "./icons/shoping box.png"
+import searchCancled from "./icons/search cancled.png"
 import activewearCategory from "./Activewear Category.jpg"
 import outwearCategory from "./Outwear Category.jpg"
 import bagCategory from "./Bag Category.jpg"
@@ -80,6 +81,7 @@ export const Image = {
   shoppingBagIcon,
   checkMark,
   shopingBox,
+  searchCancled,
   activewearCategory,
   outwearCategory,
   bagCategory,
