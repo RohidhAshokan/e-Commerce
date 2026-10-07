@@ -9,33 +9,24 @@ import { useNavigate } from "react-router-dom";
 import { getOrderList } from "../redux/action";
 import moment from "moment";
 import { statusList } from "../constants";
+import { PriceConversion } from "../common/PriceConversion";
 
 export function Cart() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let [recepit, setRecepit] = useState([]);
+  let [paymentLoader, setPaymentLoader] = useState(false);
   let { productList, orderList } = useSelector((state) => state.ProductReducer);
   let cartData = productList.filter((el) => el.isAdded);
   let subTotal = 0;
   let shippingCharge = cartData.length * 50;
-  let checkoutSubTotal = 0;
-  let checkoutShippingCharge = 0;
-  let checkoutTotal;
   cartData.map((el) => {
     let price = el.price.replaceAll("₹", "").replaceAll(",", "");
     let noOfProduct = +price * el.quantity;
     subTotal = noOfProduct + Number(subTotal);
   });
   let total = subTotal + shippingCharge;
-  if (orderList.length > 0) {
-    orderList.map((el) => {
-      let price = el.price?.replaceAll("₹", "").replaceAll(",", "");
-      let noOfProduct = +price * el.quantity;
-      checkoutSubTotal = noOfProduct + Number(checkoutSubTotal);
-    });
-    checkoutShippingCharge = orderList.length * 50;
-    checkoutTotal = checkoutSubTotal + checkoutShippingCharge;
-  }
+
   const handleAddProduct = (el) => {
     let updatedProductList = productList.map((item) => {
       if (item.id === el.id) {
@@ -65,9 +56,11 @@ export function Cart() {
     dispatch(getProductList(updatedProductList));
   };
   function handleCheckout() {
+    setPaymentLoader(true);
     const randomHex = Math.random().toString(16).substring(2, 8).toUpperCase();
     const orderId = `ORD-${randomHex}`;
-    const randomStatus = statusList[Math.floor(Math.random() * statusList.length)];
+    const randomStatus =
+      statusList[Math.floor(Math.random() * statusList.length)];
     const status = randomStatus;
     let updatedCartList = cartData.map((el) => {
       return {
@@ -75,14 +68,30 @@ export function Cart() {
         checkoutAt: moment(new Date()).format("MMMM Do YYYY, h:mm a"),
         orderId,
         status,
+        isLoading: true,
       };
     });
     dispatch(getOrderList([...orderList, ...updatedCartList]));
-    setRecepit(cartData);
+    setTimeout(() => {
+      setRecepit(cartData);
+      setPaymentLoader(false);
+    }, 1000);
     let updatedProductList = productList.map((item) => {
       return { ...item, isAdded: false, quantity: 0 };
     });
     dispatch(getProductList(updatedProductList));
+  }
+  let checkoutSubTotal = 0;
+  let checkoutShippingCharge = 0;
+  let checkoutTotal;
+  if (recepit.length > 0) {
+    recepit.map((el) => {
+      let price = el.price?.replaceAll("₹", "").replaceAll(",", "");
+      let noOfProduct = +price * el.quantity;
+      checkoutSubTotal = noOfProduct + Number(checkoutSubTotal);
+    });
+    checkoutShippingCharge = recepit.length * 50;
+    checkoutTotal = checkoutSubTotal + checkoutShippingCharge;
   }
   const handleRedrectFeatures = () => navigate("/featured");
   const handleTrackOrder = () => navigate("/orders");
@@ -112,12 +121,12 @@ export function Cart() {
                 }}
               />
             </div>
-            <h2 className="cart-empty-head">Thanks, your order is placed</h2>
+            <h2 className="cart-empty-head">Thank you for the purchase</h2>
             <p className="cart-empty-para">
-              Order #FS-10482. We've sent a confirmation to your email.
+              Your order {orderList[orderList.length - 1].orderId} is placed.
             </p>
           </div>
-          {recepit?.map((el) => {
+          {recepit?.map((el, index) => {
             return (
               <div
                 className="cart-item"
@@ -125,6 +134,9 @@ export function Cart() {
                 style={{
                   padding: "10px 20px",
                   gridTemplateColumns: "60px 1fr auto",
+                  ...(recepit.length - 1 !== index && {
+                    borderBottom: "1px solid #e4e2d8",
+                  }),
                 }}
               >
                 <div
@@ -154,15 +166,15 @@ export function Cart() {
           <div className="cart-summary">
             <div className="summary-row">
               <span>Subtotal</span>
-              <span>₹{checkoutSubTotal}.00</span>
+              <span>{PriceConversion(checkoutSubTotal)}</span>
             </div>
             <div className="summary-row">
               <span>Shipping</span>
-              <span>₹{checkoutShippingCharge}.00</span>
+              <span>{PriceConversion(checkoutShippingCharge)}</span>
             </div>
             <div className="summary-row total">
               <span>Total paid</span>
-              <span>₹{checkoutTotal}.00</span>
+              <span>{PriceConversion(checkoutTotal)}</span>
             </div>
             <div
               style={{
@@ -186,14 +198,47 @@ export function Cart() {
             </div>
           </div>
         </div>
+      ) : paymentLoader ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "70vh",
+          }}
+        >
+          <div className="cart-empty-wrap">
+            <div className="loading-spinner-large"></div>
+            <h2 className="cart-empty-head" style={{ fontSize: "26px" }}>
+              Processing your order
+            </h2>
+            <p
+              className="cart-empty-para"
+              style={{ margin: "0", fontSize: "16px" }}
+            >
+              This usually takes a few seconds. Please don't close
+            </p>
+            <p className="cart-empty-para" style={{ fontSize: "16px" }}>
+              or refresh this page.
+            </p>
+          </div>
+        </div>
       ) : (
         <div className="cart-page">
           <h1 className="cart-page-head">Your cart</h1>
           {cartData.length === 0 && <div className="cart-rule-line"></div>}
           {productList
             .filter((el) => el.isAdded)
-            .map((el) => (
-              <div className="cart-item" key={el.id}>
+            .map((el, index) => (
+              <div
+                className="cart-item"
+                key={el.id}
+                style={{
+                  ...(cartData.length - 1 !== index && {
+                    borderBottom: "1px solid #e4e2d8",
+                  }),
+                }}
+              >
                 <div className="cart-item-thumb">
                   <img
                     src={el.image}
@@ -223,15 +268,15 @@ export function Cart() {
             <div className="cart-summary">
               <div className="summary-row">
                 <span>Subtotal</span>
-                <span>₹{subTotal.toFixed(2)}</span>
+                <span>{PriceConversion(subTotal)}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
-                <span>₹{shippingCharge.toFixed(2)}</span>
+                <span>{PriceConversion(shippingCharge)}</span>
               </div>
               <div className="summary-row total">
                 <span>Total</span>
-                <span>₹{total.toFixed(2)}</span>
+                <span>{PriceConversion(total)}</span>
               </div>
               <div style={{ marginTop: "20px" }}>
                 <ButtonComponent

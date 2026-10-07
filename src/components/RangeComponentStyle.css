@@ -56,7 +56,7 @@
 
 .thumb::-moz-range-thumb {
   background-color: #fff;
-   border: 3px solid var(--accent);
+  border: 3px solid var(--accent);
   border-radius: 50%;
   cursor: pointer;
   height: 14px;
@@ -69,20 +69,23 @@
 .slider {
   position: relative;
   width: 100%;
+  max-width: 100%;
 }
 
 .slider__track,
 .slider__range {
   position: absolute;
   /* Adjust slider track thickness */
-  height: 3px; 
+  height: 3px;
   border-radius: 3px;
+  max-width: 100%;
 }
 
 .slider__track {
   background-color: var(--border);
   width: 100%;
   z-index: 1;
+  max-width: 100%;
 }
 
 .slider__range {
