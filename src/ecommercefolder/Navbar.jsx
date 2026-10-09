@@ -21,9 +21,27 @@ export function Navbar() {
     <div className="bg-wrap">
       <div className="navbar-outer">
         <div className="navbar-inner">
-          <NavLink to="/" className="logo">
-            Fieldstore
-          </NavLink>
+          <div className="sm-navbar">
+            <div>
+              <NavLink to="/" className="logo">
+                Fieldstore
+              </NavLink>
+            </div>
+            <div className="sm-cart-count-wrap">
+              <NavLink to="/cart" className="links">
+                <img
+                  className="nav-icons"
+                  src={Image.shopingCartRevIcon}
+                  style={{ height: "25px", width: "25px" }}
+                />
+                {cartData.length > 0 ? (
+                  <div className="sm-cart-count">{noOfProduct}</div>
+                ) : (
+                  <></>
+                )}
+              </NavLink>
+            </div>
+          </div>
           {location.pathname === "/featured" && (
             <div className="search-bar">
               <span className="icon">⌕</span>
@@ -60,12 +78,27 @@ export function Navbar() {
           )}
           <div className="nav-links">
             <NavLink to="/" className="links">
+              <img
+                className="nav-icons"
+                src={Image.homeIcon}
+                style={{ height: "22px", width: "22px" }}
+              />
               Home
             </NavLink>
             <NavLink to="/featured" className="links">
+              <img
+                className="nav-icons"
+                src={Image.featuresIcon}
+                style={{ height: "20px", width: "20px" }}
+              />
               Featured
             </NavLink>
             <NavLink to="/cart" className="links">
+              <img
+                className="nav-icons"
+                src={Image.shopingCartRevIcon}
+                style={{ height: "25px", width: "25px" }}
+              />
               Cart
               {cartData.length > 0 ? (
                 <div className="cart-count">{noOfProduct}</div>
@@ -74,6 +107,11 @@ export function Navbar() {
               )}
             </NavLink>
             <NavLink to="/orders" className="links">
+              <img
+                className="nav-icons"
+                src={Image.ordersIcon}
+                style={{ height: "20px", width: "20px" }}
+              />
               Orders
             </NavLink>
             {/* <NavLink to="/login" className="links">

@@ -26,14 +26,19 @@ export function Home() {
             A small, considered catalogue of things for the home and the
             outdoors — built to last, not to trend.
           </p>
-          <ButtonComponent className="browse-btn">
+          <ButtonComponent
+            className="browse-btn"
+            onClick={()=>navigate("/featured")}
+          >
             Browse featured
           </ButtonComponent>
         </div>
         <div className="feature-pic-wrap">
           <img
+          className="card-img cfb-img"
             src={Image.cfb}
-            style={{ height: "435.425px", width: "610px" }}
+            alt="Canvas field bag"
+            // style={{ height: "435.425px", width: "610px" }}
           />
           <div className="feature-float">
             <strong className="float-name">Canvas field bag</strong>
@@ -56,8 +61,10 @@ export function Home() {
                   <div className="card-media">
                     <div className="swatch sw1">
                       <img
+                      className="card-img"
                         src={el.image}
-                        style={{ height: "254px", width: "277.6px" }}
+                        alt={el.name}
+                        // style={{ height: "254px", width: "277.6px" }}
                       />
                     </div>
                   </div>
