@@ -100,11 +100,12 @@ export function Cart() {
     <>
       {recepit.length > 0 ? (
         <div
-          style={{
-            padding: "56px 48px",
-            maxWidth: "920px",
-            margin: "auto",
-          }}
+          className="recepit-wrap"
+          // style={{
+          //   padding: "56px 48px",
+          //   maxWidth: "920px",
+          //   margin: "auto",
+          // }}
         >
           <div
             style={{
@@ -177,11 +178,12 @@ export function Cart() {
               <span>{PriceConversion(checkoutTotal)}</span>
             </div>
             <div
-              style={{
-                marginTop: "20px",
-                display: "flex",
-                gap: "10px",
-              }}
+              className="cart-actions"
+              // style={{
+              //   marginTop: "20px",
+              //   display: "flex",
+              //   gap: "10px",
+              // }}
             >
               <ButtonComponent
                 variant={"primaryFullWidth"}
@@ -231,7 +233,7 @@ export function Cart() {
             .filter((el) => el.isAdded)
             .map((el, index) => (
               <div
-                className="cart-item"
+                className="cart-item cart-item-edit"
                 key={el.id}
                 style={{
                   ...(cartData.length - 1 !== index && {
@@ -241,8 +243,10 @@ export function Cart() {
               >
                 <div className="cart-item-thumb">
                   <img
+                    className="thumb-img"
                     src={el.image}
-                    style={{ height: "88px", width: "88px" }}
+                    alt={el.name}
+                    // style={{ height: "88px", width: "88px" }}
                   />
                 </div>
                 <div>
@@ -325,8 +329,8 @@ export function Cart() {
                 Featured this week
               </h2>
               <div
-                className="grid"
-                style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+                className="grid grid-3"
+                // style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
               >
                 {productList.slice(0, 3).map((el) => {
                   return (
@@ -335,11 +339,14 @@ export function Cart() {
                         <div className="card-media">
                           <div className="swatch sw1">
                             <img
+                              className="card-img"
                               src={el.image}
-                              style={{
-                                height: "258.663px",
-                                width: "258.663px",
-                              }}
+                              alt={el.name}
+
+                              // style={{
+                              //   height: "258.663px",
+                              //   width: "258.663px",
+                              // }}
                             />
                           </div>
                         </div>

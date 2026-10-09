@@ -196,8 +196,8 @@ export function Orders() {
                 Featured this week
               </h2>
               <div
-                className="grid"
-                style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+                className="grid grid-3"
+                // style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
               >
                 {productList.slice(0, 3).map((el) => {
                   return (
@@ -206,15 +206,17 @@ export function Orders() {
                         <div className="card-media">
                           <div className="swatch sw1">
                             <img
+                              className="card-img"
                               src={el.image}
-                              style={{
-                                height: "258.663px",
-                                width: "258.663px",
-                              }}
+                              alt={el.name}
+                              // style={{
+                              //   height: "258.663px",
+                              //   width: "258.663px",
+                              // }}
                             />
                           </div>
                         </div>
-                        <div className="card-title">{el.name}</div>
+                        <div className="card-title" style={{display:"flex"}}>{el.name}</div>
                         <div className="card-sub" style={{ display: "flex" }}>
                           {el.colors.name}
                         </div>

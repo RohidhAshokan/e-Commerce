@@ -1,5 +1,5 @@
 import "./styles.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ButtonComponent from "../components/ButtonComponent";
 import PageBtnComponent from "../components/PageBtnComponent";
 import { CheckboxComponent } from "../components/CheckboxComponent";
@@ -19,6 +19,7 @@ import RangeComponent from "../components/RangeComponent";
 export function Featured() {
   const dispatch = useDispatch();
   let [pageNumber, setPageNumber] = useState(1);
+  const sidebarRef = useRef(null);
   const {
     productList,
     searchText,
@@ -44,6 +45,7 @@ export function Featured() {
   const [maxVal, setMaxVal] = useState(max);
   const categories = [...new Set(searchResults.map((el) => el.category))];
   let colors = [...new Set(searchResults.map((el) => el.colors.name))];
+  const closeIcon = Image.close;
   useEffect(() => {
     return () => {
       dispatch(getFilterStatus(true));
@@ -52,6 +54,21 @@ export function Featured() {
   useEffect(() => {
     resetCb();
   }, [searchText]);
+  useEffect(() => {
+    if (!isFilter) return;
+
+    function handleOutsideClick(e) {
+      if (!window.matchMedia("(max-width: 767px)").matches) return;
+      if (sidebarRef.current?.contains(e.target)) return;
+      if (e.target.closest(".filter-icon")) return;
+
+      dispatch(getFilterStatus(false));
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+    return () =>
+      document.removeEventListener("pointerdown", handleOutsideClick);
+  }, [isFilter]);
 
   const resetCb = () => {
     dispatch(
@@ -157,6 +174,9 @@ export function Featured() {
     dispatch(getColorsCb(updatedColor));
     setPageNumber(1);
   }
+  useEffect(() => {
+    setPageNumber(1);
+  }, [minVal, maxVal]);
   function handleCollection(elId) {
     dispatch(getSearchText(""));
     dispatch(getCategoryId(elId));
@@ -170,26 +190,35 @@ export function Featured() {
     setMaxVal(max);
     resetCb();
   }
+  const visibleCount = 3;
+  const startPage = Math.max(1, Math.min(pageNumber - 1, productListLength - visibleCount + 1),
+  );
+  const visiblePages = Array.from(
+    { length: Math.min(visibleCount, productListLength)},
+    (_, i) => startPage + i,
+  );
   return (
     <div
-      className="search-layout"
-      style={
-        isFilter && searchResults.length > 0
-          ? {
-              display: "grid",
-              gridTemplateColumns: "220px 1fr",
-              gap: "40px",
-              padding: "40px 48px",
-            }
-          : searchResults.length > 0
-            ? { padding: "40px 64px" }
-            : { padding: "56px 48px", maxWidth: "920px", margin: "0 auto" }
-      }
+      className={`search-layout ${isFilter && searchResults.length > 0 ? "with-filter" : searchResults.length > 0 ? "no-filter" : "empty-results"}`}
     >
       {isFilter && searchResults.length > 0 && (
-        <div className="filter-sidebar">
+        <div className="filter-sidebar filter-backdrop" ref={sidebarRef}>
           <div className="filter-group">
-            <h4>Category</h4>
+            <h4>Category </h4>
+            <div
+              className="delete-icon filter-clear-sidebar"
+              onClick={() => dispatch(getFilterStatus(false))}
+              style={{ top: "30px", right: "30px" }}
+            >
+              <img
+                src={closeIcon}
+                style={{
+                  height: "12px",
+                  width: "12px",
+                }}
+              ></img>
+            </div>
+
             <CheckboxComponent
               onChange={(e) => handleCategory(e)}
               data={categoriesCb}
@@ -227,19 +256,22 @@ export function Featured() {
           }
 
           <div
-            className="feature-grid"
-            style={isFilter ? { gap: "20px" } : { gap: "50px" }}
+            className={`feature-grid ${isFilter ? "grid-tight" : "grid-wide"}`}
+            // className="feature-grid"
+            // style={isFilter ? { gap: "20px" } : { gap: "50px" }}
           >
             {updatedList.map((el) => {
               return (
                 <div key={el.id}>
                   <img
+                    className="product-img"
                     src={el.image}
-                    style={
-                      isFilter
-                        ? { height: "200px", width: "200px" }
-                        : { height: "250px", width: "250px" }
-                    }
+                    alt={el.name}
+                    // style={
+                    //   isFilter
+                    //     ? { height: "200px", width: "200px" }
+                    //     : { height: "250px", width: "250px" }
+                    // }
                   />
                   <div className="card-title">{el.name}</div>
                   <div className="card-sub" style={{ display: "flex" }}>
@@ -289,7 +321,7 @@ export function Featured() {
               );
             })}
           </div>
-          {productListLength > 1 && (
+          {/* {productListLength > 1 && (
             <div className="page-wrap">
               <PageBtnComponent
                 variant={"outlineRounded"}
@@ -298,7 +330,7 @@ export function Featured() {
               >
                 {"<-"}
               </PageBtnComponent>
-              {Array(productListLength)
+              {/* {Array(productListLength)
                 .fill("")
                 .map((el, index) => {
                   return (
@@ -314,7 +346,65 @@ export function Featured() {
                       {index + 1}
                     </PageBtnComponent>
                   );
-                })}
+                })} }
+              {Array.from(
+                {
+                  length: Math.min(3, productListLength),
+                },
+                (_, index) => {
+                  const startPage = Math.min(
+                    Math.max(1, pageNumber - 1),
+                    productListLength - 2,
+                  );
+
+                  const page = startPage + index;
+
+                  return (
+                    <PageBtnComponent
+                      key={page}
+                      variant={
+                        pageNumber === page
+                          ? "primaryRounded"
+                          : "outlineRounded"
+                      }
+                      onClick={() => setPageNumber(page)}
+                    >
+                      {page}
+                    </PageBtnComponent>
+                  );
+                },
+              )}
+              <PageBtnComponent
+                variant={"outlineRounded"}
+                onClick={handleNextPage}
+                disabled={pageNumber === productListLength}
+              >
+                {"->"}
+              </PageBtnComponent>
+            </div>
+          )} */}
+          {productListLength > 1 && (
+            <div className="page-wrap">
+              <PageBtnComponent
+                variant={"outlineRounded"}
+                onClick={handlePreviousPage}
+                disabled={pageNumber === 1}
+              >
+                {"<-"}
+              </PageBtnComponent>
+
+              {visiblePages.map((page) => (
+                <PageBtnComponent
+                  key={page}
+                  variant={
+                    pageNumber === page ? "primaryRounded" : "outlineRounded"
+                  }
+                  onClick={() => setPageNumber(page)}
+                >
+                  {page}
+                </PageBtnComponent>
+              ))}
+
               <PageBtnComponent
                 variant={"outlineRounded"}
                 onClick={handleNextPage}
