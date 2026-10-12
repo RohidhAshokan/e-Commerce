@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./RangeComponentStyle.css";
 
-const RangeComponent = ({ min, max }) => {
-  const [minVal, setMinVal] = useState(3000);
-  const [maxVal, setMaxVal] = useState(10000);
+const RangeComponent = ({ min, max,setMinVal, setMaxVal, minVal, maxVal }) => {
   const minValRef = useRef(minVal);
   const maxValRef = useRef(maxVal);
   const rangeRef = useRef(null);

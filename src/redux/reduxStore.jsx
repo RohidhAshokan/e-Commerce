@@ -13,6 +13,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "E-COMMERCE",
   storage,
+  blacKlist: ["categoriesCb", "colorsCb"]
 };
 
 // 2. Persist the combined rootReducer
@@ -23,7 +24,14 @@ const reduxStore = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [
+          FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER,
+        ],
       },
     }),
 });

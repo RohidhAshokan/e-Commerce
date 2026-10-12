@@ -3,6 +3,14 @@ import close from "./icons/close.png"
 import shoppingCartIcon from "./icons/Shopping Cart Light.png"
 import filterOn from "./icons/filterOn.png"
 import filterOff from "./icons/filterOff.png"
+import shoppingBagIcon from "./icons/shoppingBag.png"
+import checkMark from "./icons/checkmark.png"
+import shopingBox from "./icons/shoping box.png"
+import searchCancled from "./icons/search cancled.png"
+import featuresIcon from "./icons/feature.png"
+import homeIcon from "./icons/home.png"
+import ordersIcon from "./icons/orders list.png"
+import shopingCartRevIcon from "./icons/shoping cart left.png"
 import activewearCategory from "./Activewear Category.jpg"
 import outwearCategory from "./Outwear Category.jpg"
 import bagCategory from "./Bag Category.jpg"
@@ -74,6 +82,14 @@ export const Image = {
   shoppingCartIcon,
   filterOn,
   filterOff,
+  shoppingBagIcon,
+  checkMark,
+  shopingBox,
+  searchCancled,
+  featuresIcon,
+  homeIcon,
+  ordersIcon,
+  shopingCartRevIcon,
   activewearCategory,
   outwearCategory,
   bagCategory,

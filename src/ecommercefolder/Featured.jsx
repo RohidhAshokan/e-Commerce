@@ -1,49 +1,141 @@
 import "./styles.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ButtonComponent from "../components/ButtonComponent";
 import PageBtnComponent from "../components/PageBtnComponent";
 import { CheckboxComponent } from "../components/CheckboxComponent";
+import Collection from "../components/Collection";
 import { Image } from "../images";
 import { useSelector, useDispatch } from "react-redux";
-import { getProductList, getSearchText } from "../redux/action";
+import {
+  getCategoriesCb,
+  getCategoryId,
+  getColorsCb,
+  getFilterStatus,
+  getProductList,
+  getSearchText,
+} from "../redux/action";
 import RangeComponent from "../components/RangeComponent";
 
 export function Featured() {
   const dispatch = useDispatch();
   let [pageNumber, setPageNumber] = useState(1);
-  const { productList, searchText, isFilter } = useSelector(
-    (state) => state.ProductReducer,
-  );
+  const sidebarRef = useRef(null);
+  const {
+    productList,
+    searchText,
+    isFilter,
+    categoriesCb,
+    colorsCb,
+    categoryId,
+  } = useSelector((state) => state.ProductReducer);
+  const shoppingCartIcon = Image.shoppingCartIcon;
   let numberOfProduct = 8;
   let lastIndex = pageNumber * numberOfProduct;
   let firstIndex = lastIndex - numberOfProduct;
   let searchResults = productList.filter((el) =>
     el.name.toLowerCase().includes(searchText.toLowerCase()),
   );
-  let updatedList = searchResults.slice(firstIndex, lastIndex);
-  let productListLength = Math.ceil(searchResults.length / numberOfProduct);
-  const shoppingCartIcon = Image.shoppingCartIcon;
-  const pageRedirect = (index) => setPageNumber(index + 1);
-  const handlePreviousPage = () => setPageNumber(pageNumber - 1);
-  const handleNextPage = () => setPageNumber(pageNumber + 1);
-  let category = [...new Set(productList?.map((el) => el.category))];
-  let price = [...new Set(productList?.map((el) => el.price))];
-  let checkboxOptions = [];
-  let checkboxOptions2 = [];
-  let colors = [...new Set(productList?.map((el) => el.colors.name))];
-
-  category?.map((el, index) =>
-    checkboxOptions.push({ id: index + 1, name: el, isActive: false }),
-  );
+  let price = [...new Set(searchResults?.map((el) => el.price))];
   let newPrice = price?.map((el) => el.replaceAll("₹", "").replaceAll(",", ""));
   newPrice.sort((a, b) => a - b);
   let min = 0;
   let maxNumber = newPrice[newPrice.length - 1];
   let max = Math.ceil(maxNumber / 1000) * 1000;
-  colors?.map((el, index) =>
-    checkboxOptions2.push({ id: index + 1, name: el, isActive: false }),
-  );
+  const [minVal, setMinVal] = useState(min);
+  const [maxVal, setMaxVal] = useState(max);
+  const categories = [...new Set(searchResults?.map((el) => el.category))];
+  let colors = [...new Set(searchResults?.map((el) => el.colors.name))];
+  const closeIcon = Image.close;
+  useEffect(() => {
+    return () => {
+      dispatch(getFilterStatus(true));
+    };
+  }, []);
+  useEffect(() => {
+    resetCb();
+  }, [searchText]);
+  useEffect(() => {
+    if (!isFilter) return;
 
+    function handleOutsideClick(e) {
+      if (!window.matchMedia("(max-width: 767px)").matches) return;
+      if (sidebarRef.current?.contains(e.target)) return;
+      if (e.target.closest(".filter-icon")) return;
+
+      dispatch(getFilterStatus(false));
+    }
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+    return () =>
+      document.removeEventListener("pointerdown", handleOutsideClick);
+  }, [isFilter]);
+
+  const resetCb = () => {
+    dispatch(
+      getCategoriesCb(
+        categories?.map((category, index) => {
+          const existingCategory = categoriesCb?.find(
+            (item) => item.name === category,
+          );
+          if (categoryId.length > 0) {
+            return {
+              id: index + 1,
+              name: category,
+              isActive: categoryId.includes(category),
+            };
+          } else {
+            return {
+              id: index + 1,
+              name: category,
+              isActive: true,
+            };
+          }
+        }),
+      ),
+    );
+
+    dispatch(getCategoryId([]));
+    dispatch(
+      getColorsCb(
+        colors?.map((items, index) => {
+          colorsCb?.find((item) => item.name === items);
+
+          return {
+            id: index + 1,
+            name: items,
+            isActive: true,
+          };
+        }),
+      ),
+    );
+    setPageNumber(1);
+  };
+
+  if (categoriesCb) {
+    searchResults = [...searchResults].filter((el) =>
+      categoriesCb.find(
+        (category) => category.isActive && el.category === category.name,
+      ),
+    );
+  }
+  if (colorsCb) {
+    searchResults = [...searchResults].filter((el) =>
+      colorsCb.find((color) => color.isActive && el.colors.name === color.name),
+    );
+  }
+  if (max) {
+    searchResults = [...searchResults].filter(
+      (el) =>
+        el.price.replaceAll("₹", "").replaceAll(",", "") >= minVal &&
+        el.price.replaceAll("₹", "").replaceAll(",", "") <= maxVal,
+    );
+  }
+  let updatedList = searchResults.slice(firstIndex, lastIndex);
+  let productListLength = Math.ceil(searchResults.length / numberOfProduct);
+
+  const pageRedirect = (index) => setPageNumber(index + 1);
+  const handlePreviousPage = () => setPageNumber(pageNumber - 1);
+  const handleNextPage = () => setPageNumber(pageNumber + 1);
   const handleOnClick = (el) => {
     if (el.isAdded) {
       return;
@@ -53,7 +145,6 @@ export function Featured() {
       handleAddToCart(el, true, false);
     }, 500);
   };
-
   function handleAddToCart(el, isAdded, isLoading) {
     let updatedProductList = productList?.map((item) => {
       if (item.id === el.id && item.inStock) {
@@ -67,65 +158,120 @@ export function Featured() {
       dispatch(getSearchText(""));
     };
   }, []);
-
+  function handleCategory(e) {
+    const { name, checked } = e.target;
+    const updatedCategory = categoriesCb?.map((el) => {
+      if (name === el.name) {
+        return { ...el, isActive: checked };
+      } else return el;
+    });
+    const updatedColor = colorsCb?.map((el) => {
+      if (name === el.name) {
+        return { ...el, isActive: checked };
+      } else return el;
+    });
+    dispatch(getCategoriesCb(updatedCategory));
+    dispatch(getColorsCb(updatedColor));
+    setPageNumber(1);
+  }
+  useEffect(() => {
+    setPageNumber(1);
+  }, [minVal, maxVal]);
+  function handleCollection(elId) {
+    dispatch(getSearchText(""));
+    dispatch(getCategoryId(elId));
+    setMinVal(min);
+    setMaxVal(max);
+    resetCb();
+  }
+  function handleClearFilter() {
+    dispatch(getSearchText(""));
+    setMinVal(min);
+    setMaxVal(max);
+    resetCb();
+  }
+  const visibleCount = 3;
+  const startPage = Math.max(1, Math.min(pageNumber - 1, productListLength - visibleCount + 1),
+  );
+  const visiblePages = Array.from(
+    { length: Math.min(visibleCount, productListLength)},
+    (_, i) => startPage + i,
+  );
   return (
     <div
-      className="bg-wrap"
-      style={{
-        padding: "40px 48px",
-      }}
+      className={`search-layout ${isFilter && searchResults.length > 0 ? "with-filter" : searchResults.length > 0 ? "no-filter" : "empty-results"}`}
     >
-      <div
-        className="search-layout"
-        style={
-          isFilter
-            ? {
-                display: "grid",
-                gridTemplateColumns: "220px 1fr",
-                gap: "40px",
-              }
-            : {}
-        }
-      >
-        {isFilter && (
-          <div className="filter-sidebar">
-            <div className="filters">
-              <div className="filter-group">
-                <h4>Category</h4>
-                <CheckboxComponent checkboxOptions={checkboxOptions} />
-              </div>
-              <div className="filter-group" style={{paddingBottom: "20px"}}>
-                <h4>Price</h4>
-                <RangeComponent min={min} max={max} />
-              </div>
-              <div className="filter-group">
-                <h4>Color</h4>
-                <CheckboxComponent checkboxOptions2={checkboxOptions2} />
-              </div>
+      {isFilter && searchResults.length > 0 && (
+        <div className="filter-sidebar filter-backdrop" ref={sidebarRef}>
+          <div className="filter-group">
+            <h4>Category </h4>
+            <div
+              className="delete-icon filter-clear-sidebar"
+              onClick={() => dispatch(getFilterStatus(false))}
+              style={{ top: "30px", right: "30px" }}
+            >
+              <img
+                src={closeIcon}
+                style={{
+                  height: "12px",
+                  width: "12px",
+                }}
+              ></img>
             </div>
-          </div>
-        )}
 
+            <CheckboxComponent
+              onChange={(e) => handleCategory(e)}
+              data={categoriesCb}
+            />
+          </div>
+          <div className="filter-group" style={{ paddingBottom: "20px" }}>
+            <h4>Price</h4>
+            <RangeComponent
+              setMinVal={setMinVal}
+              setMaxVal={setMaxVal}
+              min={0}
+              max={max}
+              minVal={minVal}
+              maxVal={maxVal}
+            />
+          </div>
+          <div className="filter-group">
+            <h4>Color</h4>
+            <CheckboxComponent
+              onChange={(e) => handleCategory(e)}
+              data={colorsCb}
+            />
+          </div>
+        </div>
+      )}
+
+      {searchResults.length > 0 ? (
         <div>
-          {isFilter && (
+          {
             <p className="search-header">
-              Showing results for — {productList.length} items
+              Showing results for{" "}
+              {searchText && <strong>"{searchText}"</strong>} —{" "}
+              {searchResults.length} items
             </p>
-          )}
+          }
+
           <div
-            className="feature-grid"
-            style={isFilter ? { gap: "20px" } : { gap: "50px" }}
+            className={`feature-grid ${isFilter ? "grid-tight" : "grid-wide"}`}
+            // className="feature-grid"
+            // style={isFilter ? { gap: "20px" } : { gap: "50px" }}
           >
             {updatedList?.map((el) => {
               return (
                 <div key={el.id}>
                   <img
+                    className="product-img"
                     src={el.image}
-                    style={
-                      isFilter
-                        ? { height: "200px", width: "200px" }
-                        : { height: "250px", width: "250px" }
-                    }
+                    alt={el.name}
+                    // style={
+                    //   isFilter
+                    //     ? { height: "200px", width: "200px" }
+                    //     : { height: "250px", width: "250px" }
+                    // }
                   />
                   <div className="card-title">{el.name}</div>
                   <div className="card-sub" style={{ display: "flex" }}>
@@ -175,41 +321,147 @@ export function Featured() {
               );
             })}
           </div>
-          <div className="page-wrap">
-            <PageBtnComponent
-              variant={"outlineRounded"}
-              onClick={handlePreviousPage}
-              disabled={pageNumber === 1}
-            >
-              {"<-"}
-            </PageBtnComponent>
-            {Array(productListLength)
-              .fill("")
-              ?.map((el, index) => {
-                return (
-                  <PageBtnComponent
-                    key={index}
-                    variant={
-                      pageNumber === index + 1
-                        ? "primaryRounded"
-                        : "outlineRounded"
-                    }
-                    onClick={() => pageRedirect(index)}
-                  >
-                    {index + 1}
-                  </PageBtnComponent>
-                );
-              })}
-            <PageBtnComponent
-              variant={"outlineRounded"}
-              onClick={handleNextPage}
-              disabled={pageNumber === productListLength}
-            >
-              {"->"}
-            </PageBtnComponent>
+          {/* {productListLength > 1 && (
+            <div className="page-wrap">
+              <PageBtnComponent
+                variant={"outlineRounded"}
+                onClick={handlePreviousPage}
+                disabled={pageNumber === 1}
+              >
+                {"<-"}
+              </PageBtnComponent>
+              {/* {Array(productListLength)
+                .fill("")
+                ?.map((el, index) => {
+                  return (
+                    <PageBtnComponent
+                      key={index}
+                      variant={
+                        pageNumber === index + 1
+                          ? "primaryRounded"
+                          : "outlineRounded"
+                      }
+                      onClick={() => pageRedirect(index)}
+                    >
+                      {index + 1}
+                    </PageBtnComponent>
+                  );
+                })} }
+              {Array.from(
+                {
+                  length: Math.min(3, productListLength),
+                },
+                (_, index) => {
+                  const startPage = Math.min(
+                    Math.max(1, pageNumber - 1),
+                    productListLength - 2,
+                  );
+
+                  const page = startPage + index;
+
+                  return (
+                    <PageBtnComponent
+                      key={page}
+                      variant={
+                        pageNumber === page
+                          ? "primaryRounded"
+                          : "outlineRounded"
+                      }
+                      onClick={() => setPageNumber(page)}
+                    >
+                      {page}
+                    </PageBtnComponent>
+                  );
+                },
+              )}
+              <PageBtnComponent
+                variant={"outlineRounded"}
+                onClick={handleNextPage}
+                disabled={pageNumber === productListLength}
+              >
+                {"->"}
+              </PageBtnComponent>
+            </div>
+          )} */}
+          {productListLength > 1 && (
+            <div className="page-wrap">
+              <PageBtnComponent
+                variant={"outlineRounded"}
+                onClick={handlePreviousPage}
+                disabled={pageNumber === 1}
+              >
+                {"<-"}
+              </PageBtnComponent>
+
+              {visiblePages?.map((page) => (
+                <PageBtnComponent
+                  key={page}
+                  variant={
+                    pageNumber === page ? "primaryRounded" : "outlineRounded"
+                  }
+                  onClick={() => setPageNumber(page)}
+                >
+                  {page}
+                </PageBtnComponent>
+              ))}
+
+              <PageBtnComponent
+                variant={"outlineRounded"}
+                onClick={handleNextPage}
+                disabled={pageNumber === productListLength}
+              >
+                {"->"}
+              </PageBtnComponent>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>
+          <p className="search-header">
+            Showing results for {searchText && <strong>"{searchText}"</strong>}{" "}
+            — {searchResults.length} items
+          </p>
+          <div className="cart-rule-line" style={{ opacity: "0.25" }}></div>
+          <div className="cart-empty-wrap">
+            <div>
+              <img
+                src={Image.searchCancled}
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  marginBottom: "16px",
+                }}
+              />
+            </div>
+            <h2 className="cart-empty-head">
+              No products found {searchText ? " for" + ` "${searchText}"` : ""}
+            </h2>
+            <p className="cart-empty-para" style={{ margin: "0" }}>
+              {searchText
+                ? "Check the spelling, try a different keyword,"
+                : categoriesCb.find((el) => el.isActive === true)
+                  ? colorsCb.find((el) => el.isActive === true)
+                    ? "Provided price does not matched any of the product,"
+                    : "Selected color is not availabe, try a diffrent color or product,"
+                  : "Category does not match, try a diffrent category,"}
+              or
+            </p>
+            <p className="cart-empty-para">remove some filters.</p>
+            <ButtonComponent variant={"primary"} onClick={handleClearFilter}>
+              Clear filter
+            </ButtonComponent>
+          </div>
+          <div className="cart-rule-line"></div>
+          <div style={{ padding: "30px 0 0 0", fontSize: "20px" }}>
+            <Collection
+              handleCollection={handleCollection}
+              picLable={"Popular right now"}
+              picHeight={"195px"}
+              picWidth={"261px"}
+            />
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

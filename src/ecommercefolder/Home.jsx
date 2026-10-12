@@ -1,16 +1,21 @@
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 import ButtonComponent from "../components/ButtonComponent";
+import Collection from "../components/Collection";
 import { Image } from "../images";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getCategoriesCb, getCategoryId } from "../redux/action";
 import "./styles.css";
 
 export function Home() {
-  const collectionCard = [
-    { name: "Outwear", image: Image.outwearCategory },
-    { name: "Bags & Accessories", image: Image.bagCategory },
-    { name: "Footwear", image: Image.footwearCategory },
-  ];
-  const {productList}  = useSelector((state)=> state.ProductReducer)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { productList, categoriesCb } = useSelector(
+    (state) => state.ProductReducer,
+  );
+  function handleCollection(elId) {
+    dispatch(getCategoryId(elId));
+    navigate('/featured')  
+  }
   return (
     <div className="bg-wrap">
       <div className="feature">
@@ -21,12 +26,20 @@ export function Home() {
             A small, considered catalogue of things for the home and the
             outdoors — built to last, not to trend.
           </p>
-          <ButtonComponent className="browse-btn">
+          <ButtonComponent
+            className="browse-btn"
+            onClick={()=>navigate("/featured")}
+          >
             Browse featured
           </ButtonComponent>
         </div>
         <div className="feature-pic-wrap">
-          <img src={Image.cfb} style={{ height: "435.425px", width: "610px" }} />
+          <img
+          className="card-img cfb-img"
+            src={Image.cfb}
+            alt="Canvas field bag"
+            // style={{ height: "435.425px", width: "610px" }}
+          />
           <div className="feature-float">
             <strong className="float-name">Canvas field bag</strong>
             <span className="float-price">From ₹8,189</span>
@@ -48,8 +61,10 @@ export function Home() {
                   <div className="card-media">
                     <div className="swatch sw1">
                       <img
+                      className="card-img"
                         src={el.image}
-                        style={{ height: "254px", width: "277.6px" }}
+                        alt={el.name}
+                        // style={{ height: "254px", width: "277.6px" }}
                       />
                     </div>
                   </div>
@@ -64,23 +79,13 @@ export function Home() {
           })}
         </div>
       </div>
-      <div className="section" style={{ paddingTop: "0" }}>
-        <h2 className="section-head">Shop by collection</h2>
-        <div className="collections">
-          {collectionCard.map((el) => {
-            return (
-              <div className="collection-card" key={el.name}>
-                <div className="collection-image-fill">
-                  <img
-                    src={el.image}
-                    style={{ height: "285px", width: "380px" }}
-                  />
-                </div>
-                <div className="collection-label">{el.name}</div>
-              </div>
-            );
-          })}
-        </div>
+      <div className="section">
+        <Collection
+          handleCollection={handleCollection}
+          picLable={"Shop by collection"}
+          picHeight={"285px"}
+          picWidth={"380px"}
+        />
       </div>
       <div className="end-card">
         <span>© Fieldstore</span>
