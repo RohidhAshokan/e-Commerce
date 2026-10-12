@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ButtonComponent from "../components/ButtonComponent";
 import "./styles.css";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,6 +10,7 @@ import { getOrderList } from "../redux/action";
 import moment from "moment";
 import { statusList } from "../constants";
 import { PriceConversion } from "../common/PriceConversion";
+import FeatureSample from "../components/FeatureSample";
 
 export function Cart() {
   const navigate = useNavigate();
@@ -99,14 +100,7 @@ export function Cart() {
   return (
     <>
       {recepit.length > 0 ? (
-        <div
-          className="recepit-wrap"
-          // style={{
-          //   padding: "56px 48px",
-          //   maxWidth: "920px",
-          //   margin: "auto",
-          // }}
-        >
+        <div className="recepit-wrap">
           <div
             style={{
               textAlign: "center",
@@ -177,14 +171,7 @@ export function Cart() {
               <span>Total paid</span>
               <span>{PriceConversion(checkoutTotal)}</span>
             </div>
-            <div
-              className="cart-actions"
-              // style={{
-              //   marginTop: "20px",
-              //   display: "flex",
-              //   gap: "10px",
-              // }}
-            >
+            <div className="cart-actions">
               <ButtonComponent
                 variant={"primaryFullWidth"}
                 onClick={handleTrackOrder}
@@ -242,12 +229,7 @@ export function Cart() {
                 }}
               >
                 <div className="cart-item-thumb">
-                  <img
-                    className="thumb-img"
-                    src={el.image}
-                    alt={el.name}
-                    // style={{ height: "88px", width: "88px" }}
-                  />
+                  <img className="thumb-img" src={el.image} alt={el.name} />
                 </div>
                 <div>
                   <div className="cart-item-name">{el.name}</div>
@@ -328,38 +310,7 @@ export function Cart() {
               >
                 Featured this week
               </h2>
-              <div
-                className="grid grid-3"
-                // style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
-              >
-                {productList.slice(0, 3).map((el) => {
-                  return (
-                    <NavLink to="/featured" key={el.id}>
-                      <div className="card">
-                        <div className="card-media">
-                          <div className="swatch sw1">
-                            <img
-                              className="card-img"
-                              src={el.image}
-                              alt={el.name}
-
-                              // style={{
-                              //   height: "258.663px",
-                              //   width: "258.663px",
-                              // }}
-                            />
-                          </div>
-                        </div>
-                        <div className="card-title">{el.name}</div>
-                        <div className="card-sub" style={{ display: "flex" }}>
-                          {el.colors.name}
-                        </div>
-                        <div className="card-price">{el.price}</div>
-                      </div>
-                    </NavLink>
-                  );
-                })}
-              </div>
+              <FeatureSample productList={productList} />
             </div>
           )}
         </div>

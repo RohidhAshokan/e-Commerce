@@ -1,5 +1,5 @@
 import "./styles.css";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import ButtonComponent from "../components/ButtonComponent";
 import { Image } from "../images";
 import { NavLink } from "react-router-dom";
@@ -8,6 +8,7 @@ import { useState } from "react";
 import Modal from "../components/Modal";
 import { statusList } from "../constants";
 import { PriceConversion } from "../common/PriceConversion";
+import FeatureSample from "../components/FeatureSample";
 
 export function Orders() {
   let { productList, orderList } = useSelector((state) => state.ProductReducer);
@@ -64,7 +65,6 @@ export function Orders() {
   });
   let total = subTotal + shippingCharge;
   const statusIndex = statusList.indexOf(orderHistory?.status);
-
   return (
     <>
       {updatedOrderList.length > 0 ? (
@@ -195,37 +195,7 @@ export function Orders() {
               >
                 Featured this week
               </h2>
-              <div
-                className="grid grid-3"
-                // style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
-              >
-                {productList.slice(0, 3).map((el) => {
-                  return (
-                    <NavLink to="/featured" key={el.id}>
-                      <div className="card">
-                        <div className="card-media">
-                          <div className="swatch sw1">
-                            <img
-                              className="card-img"
-                              src={el.image}
-                              alt={el.name}
-                              // style={{
-                              //   height: "258.663px",
-                              //   width: "258.663px",
-                              // }}
-                            />
-                          </div>
-                        </div>
-                        <div className="card-title" style={{display:"flex"}}>{el.name}</div>
-                        <div className="card-sub" style={{ display: "flex" }}>
-                          {el.colors.name}
-                        </div>
-                        <div className="card-price">{el.price}</div>
-                      </div>
-                    </NavLink>
-                  );
-                })}
-              </div>
+              <FeatureSample productList={productList} />
             </div>
           </div>
         </div>
@@ -235,7 +205,13 @@ export function Orders() {
           <div className="modal-wrap">
             <div className="modal-head-tab">
               <div>
-                <div className="modal-head-orderid">{orderHistory.orderId}</div>
+                <div className="id-status-flex">
+                  <div className="modal-head-orderid">
+                    {orderHistory.orderId}
+                  </div>
+                  <div className="modal-status-sm">{orderHistory.status}</div>
+                </div>
+
                 <div className="modal-checkout">{orderHistory.checkoutAt}</div>
               </div>
               <div className="modal-status-wrap">

@@ -1,20 +1,20 @@
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import ButtonComponent from "../components/ButtonComponent";
 import Collection from "../components/Collection";
 import { Image } from "../images";
 import { useSelector, useDispatch } from "react-redux";
-import { getCategoriesCb, getCategoryId } from "../redux/action";
+import { getCategoryId } from "../redux/action";
 import "./styles.css";
 
 export function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { productList, categoriesCb } = useSelector(
+  const { productList } = useSelector(
     (state) => state.ProductReducer,
   );
   function handleCollection(elId) {
     dispatch(getCategoryId(elId));
-    navigate('/featured')  
+    navigate("/featured");
   }
   return (
     <div className="bg-wrap">
@@ -28,17 +28,16 @@ export function Home() {
           </p>
           <ButtonComponent
             className="browse-btn"
-            onClick={()=>navigate("/featured")}
+            onClick={() => navigate("/featured")}
           >
             Browse featured
           </ButtonComponent>
         </div>
         <div className="feature-pic-wrap">
           <img
-          className="card-img cfb-img"
+            className="card-img cfb-img"
             src={Image.cfb}
             alt="Canvas field bag"
-            // style={{ height: "435.425px", width: "610px" }}
           />
           <div className="feature-float">
             <strong className="float-name">Canvas field bag</strong>
@@ -60,12 +59,7 @@ export function Home() {
                 <div className="card">
                   <div className="card-media">
                     <div className="swatch sw1">
-                      <img
-                      className="card-img"
-                        src={el.image}
-                        alt={el.name}
-                        // style={{ height: "254px", width: "277.6px" }}
-                      />
+                      <img className="card-img" src={el.image} alt={el.name} />
                     </div>
                   </div>
                   <div className="card-title">{el.name}</div>

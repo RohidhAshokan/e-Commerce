@@ -93,7 +93,7 @@ export function Navbar() {
               />
               Featured
             </NavLink>
-            <NavLink to="/cart" className="links">
+            <NavLink to="/cart" className="links" id="cart-tab-lm">
               <img
                 className="nav-icons"
                 src={Image.shopingCartRevIcon}
@@ -106,6 +106,21 @@ export function Navbar() {
                 <></>
               )}
             </NavLink>
+            <div className="sm-cart-count-wrap" style={{ border: "none" }}>
+              <NavLink to="/cart" className="links">
+                <img
+                  className="nav-icons"
+                  src={Image.shopingCartRevIcon}
+                  style={{ height: "25px", width: "25px" }}
+                />
+                Cart
+                {cartData.length > 0 ? (
+                  <div className="sm-cart-count">{noOfProduct}</div>
+                ) : (
+                  <></>
+                )}
+              </NavLink>
+            </div>
             <NavLink to="/orders" className="links">
               <img
                 className="nav-icons"
@@ -114,9 +129,6 @@ export function Navbar() {
               />
               Orders
             </NavLink>
-            {/* <NavLink to="/login" className="links">
-              Log in
-            </NavLink> */}
           </div>
         </div>
       </div>
