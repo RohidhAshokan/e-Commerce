@@ -26,21 +26,21 @@ export function Featured() {
   const pageRedirect = (index) => setPageNumber(index + 1);
   const handlePreviousPage = () => setPageNumber(pageNumber - 1);
   const handleNextPage = () => setPageNumber(pageNumber + 1);
-  let category = [...new Set(productList.map((el) => el.category))];
-  let price = [...new Set(productList.map((el) => el.price))];
+  let category = [...new Set(productList?.map((el) => el.category))];
+  let price = [...new Set(productList?.map((el) => el.price))];
   let checkboxOptions = [];
   let checkboxOptions2 = [];
-  let colors = [...new Set(productList.map((el) => el.colors.name))];
+  let colors = [...new Set(productList?.map((el) => el.colors.name))];
 
-  category.map((el, index) =>
+  category?.map((el, index) =>
     checkboxOptions.push({ id: index + 1, name: el, isActive: false }),
   );
-  let newPrice = price.map((el) => el.replaceAll("₹", "").replaceAll(",", ""));
+  let newPrice = price?.map((el) => el.replaceAll("₹", "").replaceAll(",", ""));
   newPrice.sort((a, b) => a - b);
   let min = 0;
   let maxNumber = newPrice[newPrice.length - 1];
   let max = Math.ceil(maxNumber / 1000) * 1000;
-  colors.map((el, index) =>
+  colors?.map((el, index) =>
     checkboxOptions2.push({ id: index + 1, name: el, isActive: false }),
   );
 
@@ -55,7 +55,7 @@ export function Featured() {
   };
 
   function handleAddToCart(el, isAdded, isLoading) {
-    let updatedProductList = productList.map((item) => {
+    let updatedProductList = productList?.map((item) => {
       if (item.id === el.id && item.inStock) {
         return { ...item, isAdded: isAdded, isLoading: isLoading, quantity: 1 };
       } else return item;
@@ -116,7 +116,7 @@ export function Featured() {
             className="feature-grid"
             style={isFilter ? { gap: "20px" } : { gap: "50px" }}
           >
-            {updatedList.map((el) => {
+            {updatedList?.map((el) => {
               return (
                 <div key={el.id}>
                   <img
@@ -185,7 +185,7 @@ export function Featured() {
             </PageBtnComponent>
             {Array(productListLength)
               .fill("")
-              .map((el, index) => {
+              ?.map((el, index) => {
                 return (
                   <PageBtnComponent
                     key={index}
