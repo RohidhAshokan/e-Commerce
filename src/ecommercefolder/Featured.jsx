@@ -133,7 +133,6 @@ export function Featured() {
   let updatedList = searchResults.slice(firstIndex, lastIndex);
   let productListLength = Math.ceil(searchResults.length / numberOfProduct);
 
-  const pageRedirect = (index) => setPageNumber(index + 1);
   const handlePreviousPage = () => setPageNumber(pageNumber - 1);
   const handleNextPage = () => setPageNumber(pageNumber + 1);
   const handleOnClick = (el) => {
@@ -191,10 +190,12 @@ export function Featured() {
     resetCb();
   }
   const visibleCount = 3;
-  const startPage = Math.max(1, Math.min(pageNumber - 1, productListLength - visibleCount + 1),
+  const startPage = Math.max(
+    1,
+    Math.min(pageNumber - 1, productListLength - visibleCount + 1),
   );
   const visiblePages = Array.from(
-    { length: Math.min(visibleCount, productListLength)},
+    { length: Math.min(visibleCount, productListLength) },
     (_, i) => startPage + i,
   );
   return (
@@ -257,8 +258,6 @@ export function Featured() {
 
           <div
             className={`feature-grid ${isFilter ? "grid-tight" : "grid-wide"}`}
-            // className="feature-grid"
-            // style={isFilter ? { gap: "20px" } : { gap: "50px" }}
           >
             {updatedList?.map((el) => {
               return (
@@ -267,11 +266,6 @@ export function Featured() {
                     className="product-img"
                     src={el.image}
                     alt={el.name}
-                    // style={
-                    //   isFilter
-                    //     ? { height: "200px", width: "200px" }
-                    //     : { height: "250px", width: "250px" }
-                    // }
                   />
                   <div className="card-title">{el.name}</div>
                   <div className="card-sub" style={{ display: "flex" }}>
@@ -321,68 +315,6 @@ export function Featured() {
               );
             })}
           </div>
-          {/* {productListLength > 1 && (
-            <div className="page-wrap">
-              <PageBtnComponent
-                variant={"outlineRounded"}
-                onClick={handlePreviousPage}
-                disabled={pageNumber === 1}
-              >
-                {"<-"}
-              </PageBtnComponent>
-              {/* {Array(productListLength)
-                .fill("")
-                ?.map((el, index) => {
-                  return (
-                    <PageBtnComponent
-                      key={index}
-                      variant={
-                        pageNumber === index + 1
-                          ? "primaryRounded"
-                          : "outlineRounded"
-                      }
-                      onClick={() => pageRedirect(index)}
-                    >
-                      {index + 1}
-                    </PageBtnComponent>
-                  );
-                })} }
-              {Array.from(
-                {
-                  length: Math.min(3, productListLength),
-                },
-                (_, index) => {
-                  const startPage = Math.min(
-                    Math.max(1, pageNumber - 1),
-                    productListLength - 2,
-                  );
-
-                  const page = startPage + index;
-
-                  return (
-                    <PageBtnComponent
-                      key={page}
-                      variant={
-                        pageNumber === page
-                          ? "primaryRounded"
-                          : "outlineRounded"
-                      }
-                      onClick={() => setPageNumber(page)}
-                    >
-                      {page}
-                    </PageBtnComponent>
-                  );
-                },
-              )}
-              <PageBtnComponent
-                variant={"outlineRounded"}
-                onClick={handleNextPage}
-                disabled={pageNumber === productListLength}
-              >
-                {"->"}
-              </PageBtnComponent>
-            </div>
-          )} */}
           {productListLength > 1 && (
             <div className="page-wrap">
               <PageBtnComponent

@@ -236,16 +236,19 @@ a {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 2px;
+  text-align: start;
 }
 .card-sub {
   font-size: 13px;
   color: var(--muted);
+  text-align: start;
 }
 .card-price {
   font-size: 14px;
   font-weight: 600;
   margin-top: 6px;
   margin-bottom: 12px;
+  text-align: start;
 }
 .collection-card {
   border-radius: 10px;
@@ -584,12 +587,17 @@ a {
   align-items: center;
   gap: 10px;
 }
+.modal-status-sm,
 .modal-status {
   background: var(--accent-light);
   color: var(--accent);
   font-size: 12px;
   padding: 4px 12px;
   border-radius: 999px;
+  text-align: center;
+}
+.modal-status-sm {
+  display: none;
 }
 .modal-close {
   font-size: 20px;
@@ -769,9 +777,6 @@ a {
   .links {
     display: flex;
     flex-direction: column;
-  }
-  .cart-count {
-    display: none;
   }
   .navbar-inner {
     height: auto;
@@ -958,7 +963,7 @@ a {
     cursor: pointer;
     padding: 6px;
   }
-  
+
   .sm-navbar {
     display: flex;
     align-items: center;
@@ -987,11 +992,17 @@ a {
     right: -6px;
     background: var(--clay);
     color: #fff;
-    font-size: 11px;
+    font-size: 12px;
     border-radius: 50%;
-    height: 15px;
-    width: 15px;
+    height: 18px;
+    width: 18px;
     font-weight: 600;
+  }
+  #cart-tab-lm {
+    display: none;
+  }
+  .order-status-wrap {
+    padding: 14px 0;
   }
   @keyframes drawer-in {
     from {
@@ -1011,8 +1022,23 @@ a {
   .grid-3 {
     grid-template-columns: repeat(1, 1fr);
   }
+  .grid-3 > :nth-child(3) {
+    display: block;
+  }
   .nav-links {
     padding: 10px 5px 12px;
+  }
+  .modal-status {
+    display: none;
+  }
+  .modal-status-sm {
+    display: block;
+  }
+  .id-status-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
   }
 }
 /* ---------- fix: random-size photos + grids that stretch ---------- */
